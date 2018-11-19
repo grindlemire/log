@@ -1,0 +1,10 @@
+{"level":"INFO","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:17","msg":"no formatting"}
+{"level":"INFO","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:18","msg":"formatting [here]"}
+{"level":"INFO","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:19","msg":"extra fields","like":"this","or_numbers":1}
+{"level":"WARN","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:21","msg":"no formatting"}
+{"level":"WARN","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:22","msg":"formatting [here]"}
+{"level":"WARN","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:23","msg":"extra fields","like":"this","or_numbers":1}
+{"level":"ERROR","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:25","msg":"no formatting"}
+{"level":"ERROR","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:26","msg":"formatting [here]"}
+{"level":"ERROR","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:27","msg":"extra fields","like":"this","or_numbers":1}
+{"level":"FATAL","ts":"2018-11-19T21:45:00.810Z","caller":"example/main.go:29","msg":"All done"}

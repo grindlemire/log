@@ -7,7 +7,7 @@ Because I often need a logger that is extremely simple to hook up and just use. 
 
 This package is intended to be a very lightweight wrapper on top of zap while greatly simplifying the configuration, providing capbaility to easily produce colored logs or json logs, and seamlessly integrate with rotating log files.
 
-Usage:
+# Usage:
 ```Golang
 func main() {
     // configuration is compatible with env loading or json if you want to store it in a file

@@ -10,10 +10,10 @@ This package is intended to be a very lightweight wrapper on top of zap while gr
 # Usage:
 ```Golang
 func main() {
-    // configuration is compatible with env loading or json if you want to store it in a file
-    // I also provide log.Default for convenience
+	// configuration is compatible with env loading or json if you want to store it in a file
+	// I also provide log.Default for convenience
 
-    // Simply call Init with the configuration and all the files you want to log to (if any)
+	// Simply call Init with the configuration and all the files you want to log to (if any)
 	err := log.Init(log.Default, "./test.log")
 	if err != nil {
 		log.Fatalf("unable to initialize logger: %v", err)

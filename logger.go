@@ -241,6 +241,7 @@ func Fatal(args ...interface{}) {
 func Fatalf(template string, args ...interface{}) {
 	if !loaded {
 		stdlogger.Printf(template, args...)
+		os.Exit(1)
 		return
 	}
 
@@ -251,6 +252,7 @@ func Fatalf(template string, args ...interface{}) {
 func Fatalw(msg string, fields Fields) {
 	if !loaded {
 		stdlogger.Print(msg)
+		os.Exit(1)
 		return
 	}
 	zap.S().Fatalw(msg, convertToZapFields(fields)...)
@@ -259,8 +261,7 @@ func Fatalw(msg string, fields Fields) {
 // Panic logs Panic statements
 func Panic(args ...interface{}) {
 	if !loaded {
-		stdlogger.Print(args...)
-		return
+		panic(fmt.Sprint(args...))
 	}
 	zap.S().Panic(args...)
 }
@@ -268,8 +269,7 @@ func Panic(args ...interface{}) {
 // Panicf logs Panicf statements
 func Panicf(template string, args ...interface{}) {
 	if !loaded {
-		stdlogger.Printf(template, args...)
-		return
+		panic(fmt.Sprintf(template, args...))
 	}
 
 	zap.S().Panicf(template, args...)
@@ -278,8 +278,7 @@ func Panicf(template string, args ...interface{}) {
 // Panicw logs Panicw statements
 func Panicw(msg string, fields Fields) {
 	if !loaded {
-		stdlogger.Print(msg)
-		return
+		panic(fmt.Sprint(msg))
 	}
 	zap.S().Panicw(msg, convertToZapFields(fields)...)
 }

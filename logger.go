@@ -232,6 +232,7 @@ func Debugw(msg string, fields Fields) {
 func Fatal(args ...interface{}) {
 	if !loaded {
 		stdlogger.Print(args...)
+		os.Exit(1)
 		return
 	}
 	zap.S().Fatal(args...)
@@ -242,7 +243,6 @@ func Fatalf(template string, args ...interface{}) {
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		os.Exit(1)
-		return
 	}
 
 	zap.S().Fatalf(template, args...)
@@ -253,7 +253,6 @@ func Fatalw(msg string, fields Fields) {
 	if !loaded {
 		stdlogger.Print(msg)
 		os.Exit(1)
-		return
 	}
 	zap.S().Fatalw(msg, convertToZapFields(fields)...)
 }

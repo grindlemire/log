@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	stdlogger "log"
 	"os"
 	"time"
@@ -17,11 +18,13 @@ type Opts struct {
 	MaxLogBackups      int   `json:"log_max_backups"      env:"log_max_backups"       default:"5"     description:"Max number of backups to keep"`
 	CompressBackupLogs bool  `json:"log_compress_backups" env:"log_compress_backups"  default:"false" description:"Whether to compress backups or not"`
 	Console            bool  `json:"log_console"          env:"log_console"           default:"true"  description:"Whether to log to the console or not (through stdout)"`
+	CallerSkip         int   `json:"log_caller_skip"      env:"log_caller_skip"       default:"1"     description:"How many levels of stack to skip before logging in your application (defaults to 1 for this library)"`
 }
 
 // Default is the default config for on the fly use
 var Default = Opts{
 	Level:              InfoLevel,
+	CallerSkip:         1,
 	MaxLogSize:         10,
 	MaxLogBackups:      5,
 	CompressBackupLogs: false,
@@ -82,6 +85,10 @@ func Init(opts Opts, logPaths ...string) (err error) {
 		cores = append(cores, zapcore.NewCore(encoder, stdout, infoPriority))
 	}
 
+	if opts.CallerSkip <= 0 {
+		return fmt.Errorf("caller skip must be > 0 but was %d", opts.CallerSkip)
+	}
+
 	if len(logPaths) > 0 {
 		encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 		encoder = zapcore.NewJSONEncoder(encoderConfig)
@@ -104,7 +111,7 @@ func Init(opts Opts, logPaths ...string) (err error) {
 	}
 
 	core := zapcore.NewTee(cores...)
-	zap.ReplaceGlobals(zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)))
+	zap.ReplaceGlobals(zap.New(core, zap.AddCaller(), zap.AddCallerSkip(opts.CallerSkip)))
 	loaded = true
 	return nil
 }
@@ -225,6 +232,7 @@ func Debugw(msg string, fields Fields) {
 func Fatal(args ...interface{}) {
 	if !loaded {
 		stdlogger.Print(args...)
+		os.Exit(1)
 		return
 	}
 	zap.S().Fatal(args...)
@@ -234,7 +242,7 @@ func Fatal(args ...interface{}) {
 func Fatalf(template string, args ...interface{}) {
 	if !loaded {
 		stdlogger.Printf(template, args...)
-		return
+		os.Exit(1)
 	}
 
 	zap.S().Fatalf(template, args...)
@@ -244,7 +252,7 @@ func Fatalf(template string, args ...interface{}) {
 func Fatalw(msg string, fields Fields) {
 	if !loaded {
 		stdlogger.Print(msg)
-		return
+		os.Exit(1)
 	}
 	zap.S().Fatalw(msg, convertToZapFields(fields)...)
 }
@@ -252,8 +260,7 @@ func Fatalw(msg string, fields Fields) {
 // Panic logs Panic statements
 func Panic(args ...interface{}) {
 	if !loaded {
-		stdlogger.Print(args...)
-		return
+		panic(fmt.Sprint(args...))
 	}
 	zap.S().Panic(args...)
 }
@@ -261,8 +268,7 @@ func Panic(args ...interface{}) {
 // Panicf logs Panicf statements
 func Panicf(template string, args ...interface{}) {
 	if !loaded {
-		stdlogger.Printf(template, args...)
-		return
+		panic(fmt.Sprintf(template, args...))
 	}
 
 	zap.S().Panicf(template, args...)
@@ -271,8 +277,7 @@ func Panicf(template string, args ...interface{}) {
 // Panicw logs Panicw statements
 func Panicw(msg string, fields Fields) {
 	if !loaded {
-		stdlogger.Print(msg)
-		return
+		panic(fmt.Sprint(msg))
 	}
 	zap.S().Panicw(msg, convertToZapFields(fields)...)
 }

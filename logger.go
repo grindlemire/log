@@ -116,6 +116,11 @@ func Init(opts Opts, logPaths ...string) (err error) {
 	return nil
 }
 
+// GetLogger will return an instance of the logger in case we need to plug it in somewhere
+func GetLogger() *zap.SugaredLogger {
+	return zap.S()
+}
+
 // Info logs info statements
 func Info(args ...interface{}) {
 	if !loaded {

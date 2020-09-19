@@ -15,7 +15,7 @@ import (
 // Opts are options you can configure the logger with
 type Opts struct {
 	Level              Level `json:"log_level"            env:"log_level"             default:"INFO"  description:"log level to log at (possible values are debug, info, warn, error, fatal, panic)"`
-	MaxLogSize         int   `json:"log_max_size"         env:"log_max_size"          default:"10"    description:"Max size of a log before rolling over"`
+	MaxLogSize         int   `json:"log_max_size"         env:"log_max_size"          default:"10"    description:"Max size of a log in mb before rolling over"`
 	MaxLogBackups      int   `json:"log_max_backups"      env:"log_max_backups"       default:"5"     description:"Max number of backups to keep"`
 	CompressBackupLogs bool  `json:"log_compress_backups" env:"log_compress_backups"  default:"false" description:"Whether to compress backups or not"`
 	Console            bool  `json:"log_console"          env:"log_console"           default:"true"  description:"Whether to log to the console or not (through stdout)"`

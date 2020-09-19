@@ -4,6 +4,7 @@ import (
 	"fmt"
 	stdlogger "log"
 	"os"
+	"sync"
 	"time"
 
 	"go.uber.org/zap"
@@ -50,6 +51,7 @@ const (
 // loaded is a simple internal flag to specify whether we have been initialized or
 // if we should fall back on the default go logger
 var loaded = false
+var mu = &sync.RWMutex{}
 
 // rfc3339Encoder encodes the time field to rfc3339 with millisecond precision
 func rfc3339Encoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
@@ -112,7 +114,9 @@ func Init(opts Opts, logPaths ...string) (err error) {
 
 	core := zapcore.NewTee(cores...)
 	zap.ReplaceGlobals(zap.New(core, zap.AddCaller(), zap.AddCallerSkip(opts.CallerSkip)))
+	mu.Lock()
 	loaded = true
+	mu.Unlock()
 	return nil
 }
 
@@ -123,167 +127,200 @@ func GetLogger() *zap.SugaredLogger {
 
 // Info logs info statements
 func Info(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(args...)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Info(args...)
 }
 
 // Infof logs infof statements
 func Infof(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		return
 	}
-
+	mu.RUnlock()
 	zap.S().Infof(template, args...)
 }
 
 // Infow logs infow statements
 func Infow(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(msg)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Infow(msg, convertToZapFields(fields)...)
 }
 
 // Warn logs Warn statements
 func Warn(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(args...)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Warn(args...)
 }
 
 // Warnf logs Warnf statements
 func Warnf(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		return
 	}
-
+	mu.RUnlock()
 	zap.S().Warnf(template, args...)
 }
 
 // Warnw logs Warnw statements
 func Warnw(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(msg)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Warnw(msg, convertToZapFields(fields)...)
 }
 
 // Error logs Error statements
 func Error(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(args...)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Error(args...)
 }
 
 // Errorf logs Errorf statements
 func Errorf(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		return
 	}
 
+	mu.RUnlock()
 	zap.S().Errorf(template, args...)
 }
 
 // Errorw logs Errorw statements
 func Errorw(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(msg)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Errorw(msg, convertToZapFields(fields)...)
 }
 
 // Debug logs Debug statements
 func Debug(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(args...)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Debug(args...)
 }
 
 // Debugf logs Debugf statements
 func Debugf(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		return
 	}
 
+	mu.RUnlock()
 	zap.S().Debugf(template, args...)
 }
 
 // Debugw logs Debugw statements
 func Debugw(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(msg)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Debugw(msg, convertToZapFields(fields)...)
 }
 
 // Fatal logs Fatal statements
 func Fatal(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(args...)
 		os.Exit(1)
 		return
 	}
+	mu.RUnlock()
 	zap.S().Fatal(args...)
 }
 
 // Fatalf logs Fatalf statements
 func Fatalf(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Printf(template, args...)
 		os.Exit(1)
 	}
 
+	mu.RUnlock()
 	zap.S().Fatalf(template, args...)
 }
 
 // Fatalw logs Fatalw statements
 func Fatalw(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		stdlogger.Print(msg)
 		os.Exit(1)
 	}
+	mu.RUnlock()
 	zap.S().Fatalw(msg, convertToZapFields(fields)...)
 }
 
 // Panic logs Panic statements
 func Panic(args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		panic(fmt.Sprint(args...))
 	}
+	mu.RUnlock()
 	zap.S().Panic(args...)
 }
 
 // Panicf logs Panicf statements
 func Panicf(template string, args ...interface{}) {
+	mu.RLock()
 	if !loaded {
 		panic(fmt.Sprintf(template, args...))
 	}
-
+	mu.RUnlock()
 	zap.S().Panicf(template, args...)
 }
 
 // Panicw logs Panicw statements
 func Panicw(msg string, fields Fields) {
+	mu.RLock()
 	if !loaded {
 		panic(fmt.Sprint(msg))
 	}
+	mu.RUnlock()
 	zap.S().Panicw(msg, convertToZapFields(fields)...)
 }
 
